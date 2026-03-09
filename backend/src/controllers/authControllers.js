@@ -7,7 +7,7 @@ export const signup = async (req, res) => {
 
         const { email, fullName, password } = req.body
 
-        if (!email, !fullName, !password) {
+        if (!email || !fullName || !password) {
             return res.status(400).json({ message: "input filed missing" })
         }
 

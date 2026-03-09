@@ -1,19 +1,18 @@
 import { generateToken } from "../lib/utils.js"
 import User from "../models/usermodel.js"
 import bcrypt from "bcrypt"
+import { signupSchema, loginSchema } from "../lib/schemas.js"
+import cloudinary from "../lib/cloudinary.js"
 
 export const signup = async (req, res) => {
     try {
+        const validation = signupSchema.safeParse(req.body);
 
-        const { email, fullName, password } = req.body
-
-        if (!email || !fullName || !password) {
-            return res.status(400).json({ message: "input filed missing" })
+        if (!validation.success) {
+            return res.status(400).json({ message: validation.error.issues[0]?.message || "Validation Error" });
         }
 
-        if (password.length < 6) {
-            return res.status(400).json({ message: "password must be 6 character" })
-        }
+        const { email, fullName, password } = validation.data;
 
         const user = await User.findOne({ email })
 
@@ -54,12 +53,13 @@ export const signup = async (req, res) => {
 
 export const login = async (req, res) => {
     try {
+        const validation = loginSchema.safeParse(req.body);
 
-        const { email, password } = req.body
-
-        if (!email || !password) {
-            return res.status(400).json({ message: "input filed missing" })
+        if (!validation.success) {
+            return res.status(400).json({ message: validation.error.issues[0]?.message || "Validation Error" });
         }
+
+        const { email, password } = validation.data;
 
         const user = await User.findOne({ email })
 
@@ -104,5 +104,64 @@ export const logout = (req, res) => {
     } catch (err) {
         console.log("Error in logout controller", err.message);
         res.status(500).json({ message: "Internal Server Error" });
+    }
+}
+
+export const updateprofile = async (req, res) => {
+    try {
+
+        const { profilePic } = req.body;
+
+        const userId = req.user._id;
+
+        if (!profilePic) {
+            return res.status(400).json({ message: "profile pic is required" })
+        }
+
+        const uploaderResponse = await cloudinary.uploader.upload(profilePic)
+
+        const user = await User.findByIdAndUpdate(userId, { profilePic: uploaderResponse.secure_url }, { new: true })
+
+        if (!user) {
+            return res.status(400).json({ message: "user not found" })
+        }
+
+        res.status(200).json({
+            message: "profile updated successfully",
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePic: user.profilePic,
+        })
+
+
+    } catch (err) {
+        console.log("Error in updateprofile controller", err.message)
+        res.status(500).json({ message: "Internal Server Error" })
+    }
+}
+
+export const checkAuth = async (req, res) => {
+    try {
+
+        const userId = req.user._id;
+
+        const user = await User.findById(userId).select("-password");
+
+        if (!user) {
+            return res.status(400).json({ message: "user not found" })
+        }
+
+        res.status(200).json({
+            message: "user authenticated successfully",
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePic: user.profilePic,
+        })
+
+    } catch (err) {
+        console.log("Error in checkAuth controller", err.message)
+        res.status(500).json({ message: "Internal Server Error" })
     }
 }

@@ -14,7 +14,7 @@ export const protectedRoute = async (req, res, next) => {
             return res.status(401).json({ message: "Unauthorized" })
         }
 
-        const user = await User.findById(decoded.userId).select("name email profilePic");
+        const user = await User.findById(decoded.userId).select("-password");
 
         if (!user) {
             return res.status(401).json({ message: "Unauthorized" })

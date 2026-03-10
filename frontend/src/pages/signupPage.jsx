@@ -23,12 +23,22 @@ const signupPage = () => {
   const { signup, isSigningUp } = useAuthStore();
 
   const validateForm = () => {
-    if (!formdata.fullName.trim()) return toast.error("Fullname is required");
-    if (!formdata.email.trim()) return toast.error("Email is required");
-    if (!formdata.password.trim()) return toast.error("Password is required");
-    if (formdata.password.length < 6)
-      return toast.error("Password must be at least 6 characters long");
-    return true;
+    if (!formdata.fullName.trim()) {
+      toast.error("Full name is required");
+      return false;
+    }
+    if (!formdata.email.trim()) {
+      toast.error("Email is required");
+      return false;
+    }
+    if (!formdata.password.trim()) {
+      toast.error("Password is required");
+      return false;
+    }
+    if (formdata.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return false;
+    }
   };
 
   const handleSubmit = async (e) => {

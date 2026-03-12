@@ -6,7 +6,7 @@ import { Loader } from "lucide-react";
 const Sidebar = () => {
   const { users, selectedUser, setSelectedUser, getUsers, isUsersLoading } =
     useChatStore();
-  const onlineUsers = useAuthStore();
+  const { onlineUsers } = useAuthStore();
 
   useEffect(() => {
     getUsers();

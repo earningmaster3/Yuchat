@@ -11,7 +11,8 @@ import { Loader } from "lucide-react";
 import { Toaster } from "react-hot-toast";
 
 const App = () => {
-  const { isCheckingAuth, authUser, checkAuth } = useAuthStore();
+  const { isCheckingAuth, authUser, checkAuth, onlineUsers } = useAuthStore();
+  console.log("onlineUsers", onlineUsers);
 
   useEffect(() => {
     checkAuth();

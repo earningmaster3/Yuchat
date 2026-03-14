@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useChatStore } from "../../store/useChatStore";
 import MessageInput from "./MessageInput";
 import ChatHeader from "./ChatHeader";
@@ -9,15 +9,36 @@ import defaultAvatar from "../assets/user.png";
 import { useAuthStore } from "../../store/useAuthStore";
 
 const ChatContainer = () => {
-  const { getMessages, selectedUser, messages, isMessagesLoading } =
-    useChatStore();
+  const {
+    getMessages,
+    selectedUser,
+    messages,
+    isMessagesLoading,
+    subscribeToMessages,
+    unSubscribeFromMessages,
+  } = useChatStore();
   const { authUser } = useAuthStore();
 
+  const chatScroll = useRef(null);
+
   useEffect(() => {
-    if (selectedUser) {
+    if (selectedUser?._id) {
       getMessages(selectedUser._id);
     }
-  }, [selectedUser, getMessages, selectedUser?._id]);
+
+    subscribeToMessages();
+
+    return () => unSubscribeFromMessages();
+  }, [
+    selectedUser._id,
+    getMessages,
+    subscribeToMessages,
+    unSubscribeFromMessages,
+  ]);
+
+  useEffect(() => {
+    chatScroll.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   if (isMessagesLoading) {
     return (
@@ -73,6 +94,7 @@ const ChatContainer = () => {
             </div>
           </div>
         ))}
+        <div ref={chatScroll} />
       </div>
 
       <MessageInput />

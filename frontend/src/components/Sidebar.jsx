@@ -45,17 +45,17 @@ const Sidebar = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="avatar">
-                  <div className="w-10 rounded-full relative">
+                  <div className="size-10 rounded-full">
                     <img
                       src={user.profilePic || defaultAvatar}
                       alt={user.fullName}
                     />
-                    {onlineUsers.includes(user._id) ? (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-base-100"></div>
-                    ) : (
-                      <div className="absolute bottom-0 right-0 w-3 h-3 bg-gray-500 rounded-full border-2 border-base-100"></div>
-                    )}
                   </div>
+                  {onlineUsers.includes(user._id) ? (
+                    <div className="absolute bottom-0 right-0 size-3 bg-green-500 rounded-full border-2 border-base-100"></div>
+                  ) : (
+                    <div className="absolute bottom-0 right-0 size-3 bg-gray-500 rounded-full border-2 border-base-100"></div>
+                  )}
                 </div>
                 <div className="flex-1">
                   <h3 className="font-medium">{user.fullName}</h3>

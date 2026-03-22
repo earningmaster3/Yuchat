@@ -14,8 +14,10 @@ export const useAuthStore = create((set, get) => ({
   socket: null,
 
   connectSocket: () => {
-    const { authUser } = get();
+    const { authUser, socket: currentSocket } = get();
     if (!authUser) return;
+    if (currentSocket?.connected) return;
+    if (currentSocket) currentSocket.disconnect();
     const socket = io("http://localhost:3000", {
       withCredentials: true,
       query: {
